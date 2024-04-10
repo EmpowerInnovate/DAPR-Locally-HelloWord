@@ -30,85 +30,7 @@ cd quickstarts/tutorials/hello-world/node
 
 > **Note**: See https://github.com/dapr/quickstarts#supported-dapr-runtime-version for supported tags. Use `git clone https://github.com/dapr/quickstarts.git` when using the edge version of dapr runtime.
 
-
-In the `app.js` you'll find a simple `express` application, which exposes a few routes and handlers. First, take a look at the top of the file:
-
-```js
-const daprPort = process.env.DAPR_HTTP_PORT || 3500;
-const stateStoreName = `statestore`;
-const stateUrl = `http://localhost:${daprPort}/v1.0/state/${stateStoreName}`;
-```
-
-Dapr CLI creates an environment variable for the Dapr port, which defaults to 3500. You'll be using this in step 3 when sending POST messages to the system. The `stateStoreName` is the name given to the state store. You'll come back to that later on to see how that name is configured.
-
-Next, take a look at the ```neworder``` handler:
-
-```js
-app.post('/neworder', async (req, res) => {
-    const data = req.body.data;
-    const orderId = data.orderId;
-    console.log("Got a new order! Order ID: " + orderId);
-
-    const state = [{
-        key: "order",
-        value: data
-    }];
-
-    try {
-        const response = await fetch(stateUrl, {
-            method: "POST",
-            body: JSON.stringify(state),
-            headers: {
-                "Content-Type": "application/json"
-            }
-        })
-        if (!response.ok) {
-            throw "Failed to persist state.";
-        }
-        console.log("Successfully persisted state.");
-        res.status(200).send();
-    } catch (error) {
-        console.log(error);
-        res.status(500).send({message: error});
-    }
-});
-```
-
-Here the app is exposing an endpoint that will receive and handle `neworder` messages. It first logs the incoming message, and then persist the order ID to the Redis store by posting a state array to the `/state/<state-store-name>` endpoint.
-
-Alternatively, you could have persisted the state by simply returning it with the response object:
-
-```js
-res.json({
-        state: [{
-            key: "order",
-            value: order
-        }]
-    })
-```
-
-This approach, however, doesn't allow you to verify if the message successfully persisted.
-
-The app also exposes a GET endpoint, `/order`:
-
-```js
-app.get('/order', async (_req, res) => {
-    try {
-        const response = await fetch(`${stateUrl}/order`)
-        if (!response.ok) {
-            throw "Could not get state.";
-        }
-        const orders = await response.text();
-        res.send(orders);
-    }
-    catch (error) {
-        console.log(error);
-        res.status(500).send({message: error});
-    }
-});
-```
-
-This calls out to the Redis cache to retrieve the latest value of the "order" key, which effectively allows the Node.js app to be _stateless_.
+Dapr CLI creates an environment variable for the Dapr port, which defaults to 3500. You'll be using this in step 3 when sending POST messages to the system. 
 
 ## Step 3 - Run the Node.js app with Dapr
 
@@ -150,7 +72,13 @@ expected_stdout_lines:
   - "== APP == Successfully persisted state."
   - "Exited Dapr successfully"
   - "Exited App successfully"
+expected_s
+<!-- STEP
+expected_stdout_lines:
 expected_stderr_lines:
+name: "npm install"
+working_dir: node
+-->tderr_lines:
 output_match_mode: substring
 name: "run npm app"
 background: true
@@ -160,7 +88,7 @@ sleep: 5
 
 2. Run Node.js app with Dapr:
    ```bash
-   dapr run --app-id nodeapp --app-port 3000 --dapr-http-port 3500 node app.js
+   dapr  -run-app-id nodeapp --app-port 3000 --dapr-http-port 3500 node app.js
    ```
 
 <!-- END_STEP -->
@@ -222,15 +150,6 @@ dapr invoke --app-id nodeapp --method neworder --data-file sample.json
 ```
 
 <!-- END_STEP -->
-
-Alternatively, using `curl`:
-
-<!-- STEP
-expected_stdout_lines:
-expected_stderr_lines:
-name: curl test
-working_dir: node
--->
 
 ```bash
 curl -XPOST -d @sample.json -H Content-Type:application/json http://localhost:3500/v1.0/invoke/nodeapp/method/neworder
