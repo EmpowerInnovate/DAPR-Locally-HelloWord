@@ -28,6 +28,7 @@ git clone https://github.com/EmpowerInnovate/DAPR-Locally-HelloWord
 cd quickstarts/tutorials/hello-world/node
 ```
 
+Dapr CLI creates an environment variable for the Dapr port, which defaults to 3500. You'll be using this in step 3 when sending POST messages to the system. 
 
 
 ## Step 3 - Run the Node.js app with Dapr
@@ -63,7 +64,12 @@ expected_stdout_lines:
   - "== APP == Successfully persisted state."
   - "Exited Dapr successfully"
   - "Exited App successfully"
+expected_ STEP
+expected_stdout_lines:
 expected_stderr_lines:
+name: "npm install"
+working_dir: node
+-->tderr_lines:
 output_match_mode: substring
 name: "run npm app"
 background: true
@@ -73,7 +79,7 @@ sleep: 5
 
 2. Run Node.js app with Dapr:
    ```bash
-   dapr run --app-id nodeapp --app-port 3000 --dapr-http-port 3500 node app.js
+   dapr  -run-app-id nodeapp --app-port 3000 --dapr-http-port 3500 node app.js
    ```
 
 <!-- END_STEP -->
@@ -110,15 +116,6 @@ dapr invoke --app-id nodeapp --method neworder --data-file sample.json
 ```
 
 <!-- END_STEP -->
-
-Alternatively, using `curl`:
-
-<!-- STEP
-expected_stdout_lines:
-expected_stderr_lines:
-name: curl test
-working_dir: node
--->
 
 ```bash
 curl -XPOST -d @sample.json -H Content-Type:application/json http://localhost:3500/v1.0/invoke/nodeapp/method/neworder
