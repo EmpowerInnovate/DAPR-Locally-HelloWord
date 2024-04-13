@@ -25,7 +25,7 @@ Now that Dapr is set up locally, clone the repo, then navigate to the Node.js ve
 
 ```sh
 git clone https://github.com/EmpowerInnovate/DAPR-Locally-HelloWord
-cd quickstarts/tutorials/hello-world/node
+cd hello-world/node
 ```
 
 Dapr CLI creates an environment variable for the Dapr port, which defaults to 3500. You'll be using this in step 3 when sending POST messages to the system. 
@@ -95,6 +95,11 @@ While in this tutorial the default yaml files were used, usually a developer wou
 ```bash
 dapr dashboard -p 9999
 ```
+
+![nodeApp_Dapr](./img/nodeApp_Dapr.png)
+
+![nodeApp](./img/nodeApp.png)
+
 
 ## Step 4 - Post messages to the service
 
@@ -245,6 +250,10 @@ sleep: 30
    ```bash
    dapr run --app-id pythonapp python3 app.py
    ```
+
+![Dapr_App](./img/Dapr_App.png)
+
+![pythonApp](./img/pythonApp.png)
 
 <!-- END_STEP -->
 
